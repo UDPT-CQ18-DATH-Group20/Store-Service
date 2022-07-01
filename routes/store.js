@@ -14,7 +14,7 @@ router.post(
   storeController.createStore
 );
 router.post(
-  "/create/item",
+  "/create/goods",
   upload.single("picture"),
   storeController.validateAndSanitizeGoods,
   storeController.createGoods

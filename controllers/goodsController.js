@@ -30,7 +30,7 @@ exports.searchGoods = function (req, res, next) {
   filter.available = true;
 
   Goods.find(filter)
-    .select("name type price")
+    .select("name type price picture")
     .sort(sort)
     .exec(function (err, goods) {
       if (err) {

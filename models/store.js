@@ -21,11 +21,11 @@ var StoreSchema = new Schema(
     versionKey: false,
     statics: {
       isStoreExisted(accountId, callback) {
-        this.countDocuments({ account_id: accountId }, function (err, count) {
-          if (err) callback(err);
-          if (count > 0) return true;
-          else return false;
-        });
+        try {
+          return this.countDocuments({ account_id: accountId }).exec();
+        } catch (e) {
+          callback(e);
+        }
       },
     },
   }

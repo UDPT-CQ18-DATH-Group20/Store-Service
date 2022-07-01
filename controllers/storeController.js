@@ -46,7 +46,8 @@ exports.createStore = [
     if (userType != EMPLOYEE_TYPE) {
       return res.status(401).send("User don't have the authorization!");
     }
-    if (Store.isStoreExisted(accountId)) {
+
+    if (await Store.isStoreExisted(req.body.account_id)) {
       return res.status(400).send("Account already have a store!");
     }
 
@@ -124,7 +125,7 @@ exports.createGoods = function (req, res, next) {
 
       const fileObj = req.file;
       if (!fileObj) {
-        res.status(400).send("Picture is required!");
+        return res.status(400).json({ price: "Picture is required!" });
       }
       goods.picture = await upLoadGoodsPic(fileObj);
 
