@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const multer = require("multer");
 var auth = require("../services/authenticate");
+
 var storeController = require("../controllers/storeController");
 
 const upload = multer();

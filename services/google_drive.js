@@ -1,7 +1,4 @@
 const { google } = require("googleapis");
-const path = require("path");
-const fs = require("fs");
-const mime = require("mime-types");
 
 const CLIENT_ID =
   "619771572873-v3un2ig4mvsf43dosbeaf124pbbrc5km.apps.googleusercontent.com";
@@ -72,7 +69,7 @@ async function createFile(fileName, folderId, fileStream, mimeType) {
     const res = await drive.files.create({
       requestBody: {
         name: fileName,
-        mimeType: mime.contentType(fileName),
+        mimeType: mimeType,
         parents: folderId ? [folderId] : [],
         fields: "files(id, name)",
         spaces: "drive",

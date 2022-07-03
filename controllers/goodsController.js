@@ -1,8 +1,10 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const { param, validationResult } = require("express-validator");
 const Goods = require("../models/goods");
 const GOOD_TYPES = require("./storeController").GOODS_TYPE;
-const { civicinfo } = require("googleapis/build/src/apis/civicinfo");
+const brooker = require("../services/message_publisher");
+
+brooker.start();
 
 const myValidationResult = validationResult.withDefaults({
   formatter: (error) => {
@@ -34,7 +36,7 @@ exports.searchGoods = function (req, res, next) {
     .sort(sort)
     .exec(function (err, goods) {
       if (err) {
-        next(err);
+        return next(err);
       }
 
       return res.json(goods);
@@ -48,18 +50,40 @@ exports.getGoods = [
 
     if (!errors.isEmpty()) {
       return res.status(400).send("Goods id is not valid!");
-    } else next();
+    }
+    next();
   },
   function (req, res, next) {
-    console.log(req.params.goods_id);
     Goods.findOne({ _id: req.params.goods_id })
       .populate("store_id")
       .exec(function (err, goods) {
         if (err) {
-          next(err);
+          return next(err);
         }
 
         res.json(goods);
       });
   },
 ];
+
+exports.addGoodsToCart = function (req, res, next) {
+  let accountId = req.query.account_id;
+  Goods.findOne({ _id: req.params.goods_id })
+    .select("id name picture price")
+    .exec(function (err, goods) {
+      if (err) {
+        return next(err);
+      }
+
+      //Câu lệnh gọi message brooker
+      goods = goods.toObject();
+      quantity = req.query.quantity || 1;
+
+      const flag = brooker.publishItemToCart(goods, quantity, accountId);
+      if (!flag) {
+        return res.status(500).send("Server can't serve your request!");
+      }
+
+      res.send("Item has been add to your cart");
+    });
+};

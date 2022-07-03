@@ -19,15 +19,6 @@ var StoreSchema = new Schema(
   },
   {
     versionKey: false,
-    statics: {
-      isStoreExisted(accountId, callback) {
-        try {
-          return this.countDocuments({ account_id: accountId }).exec();
-        } catch (e) {
-          callback(e);
-        }
-      },
-    },
   }
 );
 
