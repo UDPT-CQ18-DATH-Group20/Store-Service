@@ -10,7 +10,7 @@ const upload = multer();
 router.use(auth);
 router.use(storeController.validateAccountId);
 router.post(
-  "/create",
+  "/",
   storeController.validateAndSanitizeStore,
   storeController.createStore
 );

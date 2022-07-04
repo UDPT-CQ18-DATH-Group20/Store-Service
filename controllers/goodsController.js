@@ -49,7 +49,7 @@ exports.getGoods = [
     const errors = myValidationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(400).send("Goods id is not valid!");
+      return res.status(404).send("Goods not founded!");
     }
     next();
   },
@@ -81,7 +81,7 @@ exports.addGoodsToCart = function (req, res, next) {
 
       const flag = brooker.publishItemToCart(goods, quantity, accountId);
       if (!flag) {
-        return res.status(500).send("Server can't serve your request!");
+        return res.status(500).send("Internal server error!");
       }
 
       res.send("Item has been add to your cart");
