@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "SET PORT=3001 & node ./bin/www",
-    "devstart": "nodemon ./bin/www",
+    "devstart": "SET PORT=3001 & nodemon ./bin/www",
     "serverstart": "SET DEBUG=store-service:* & npm run devstart"
   },
   "dependencies": {

@@ -5,7 +5,8 @@ var auth = require("../services/authenticate");
 
 router.get("/type", Goods.allGoodsType);
 router.get("/", Goods.searchGoods);
+router.get("/count", Goods.countSearchDoc);
 router.get("/:goods_id", Goods.getGoods);
-router.post("/:goods_id/cart", auth, Goods.addGoodsToCart);
+router.post("/cart/:goods_id", auth, Goods.addGoodsToCart);
 
 module.exports = router;

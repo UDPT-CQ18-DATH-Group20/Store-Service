@@ -16,31 +16,57 @@ exports.allGoodsType = function (req, res, next) {
   res.send(GOOD_TYPES);
 };
 
-exports.searchGoods = function (req, res, next) {
+exports.searchGoods = async function (req, res, next) {
   var filter = {};
+  var skip = 0;
+  var limit = 100;
   var sort = {};
 
-  console.log(req.query.type);
   if (req.query.search) {
     filter.$text = { $search: req.query.search };
     sort.score = { $meta: "textScore" };
   }
+
   if (req.query.type) {
     filter.type = { $in: req.query.type };
   }
 
   filter.available = true;
 
-  Goods.find(filter)
-    .select("name type price picture")
-    .sort(sort)
-    .exec(function (err, goods) {
-      if (err) {
-        return next(err);
-      }
+  if (req.query.limit && req.query.limit < limit) {
+    limit = req.query.limit;
+  }
 
-      return res.json(goods);
-    });
+  if (req.query.page) {
+    skip = (req.query.page - 1) * limit;
+  }
+
+  try {
+    var goodsCount = await Goods.countDocuments(filter).exec();
+    var goods = await Goods.find(filter)
+      .select("name type price picture")
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+  } catch (e) {
+    return next(e);
+  }
+
+  var result = { data: goods, count: goodsCount };
+  res.send(result);
+  // Goods.find(filter)
+  //   .select("name type price picture")
+  //   .skip(skip)
+  //   .limit(limit)
+  //   .sort(sort)
+  //   .exec(function (err, goods) {
+  //     if (err) {
+  //       return next(err);
+  //     }
+
+  //     return res.json(goods);
+  //   });
 };
 
 exports.getGoods = [
@@ -84,6 +110,26 @@ exports.addGoodsToCart = function (req, res, next) {
         return res.status(500).send("Internal server error!");
       }
 
-      res.send("Item has been add to your cart");
+      res.status(201).send("Item has been add to your cart");
     });
+};
+
+exports.countSearchDoc = function (req, res, next) {
+  var filter = {};
+
+  if (req.query.search) {
+    filter.$text = { $search: req.query.search };
+  }
+
+  if (req.query.type) {
+    filter.type = { $in: req.query.type };
+  }
+
+  filter.available = true;
+
+  Goods.countDocuments(filter, function (err, count) {
+    if (err) return next();
+
+    res.send(count.toString());
+  });
 };
