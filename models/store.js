@@ -7,7 +7,7 @@ var StoreSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
       select: false,
-      ref: "StoreInfo",
+      ref: "Store_Info",
     },
     profile_id: { type: Schema.Types.ObjectId, required: true, select: false },
     account_id: { type: Schema.Types.ObjectId, required: true, select: false },

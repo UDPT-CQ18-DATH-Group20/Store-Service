@@ -21,4 +21,6 @@ router.post(
   storeController.createGoods
 );
 
+router.get("/", storeController.getStoreInfo);
+
 module.exports = router;

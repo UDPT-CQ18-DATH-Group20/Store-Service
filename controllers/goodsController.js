@@ -133,3 +133,33 @@ exports.countSearchDoc = function (req, res, next) {
     res.send(count.toString());
   });
 };
+
+exports.orderTransaction = async function (req, res, next) {
+  var orderItems = req.body;
+
+  const session = await mongoose.startSession();
+  const result = [];
+
+  session.startTransaction();
+  try {
+    for (const orderItem of orderItems) {
+      const good = await Goods.findById(orderItem.goods_id)
+        .session(session)
+        .exec();
+      if (!good) {
+        throw Error(`${orderItem.goods_id} is not good id`);
+      }
+      good.remains -= orderItem.amount;
+      await good.save();
+      result.push({ goods_id: good._id, store_id: good.store_id });
+    }
+    await session.commitTransaction();
+  } catch (e) {
+    await session.abortTransaction();
+    return res.send(e.message);
+  } finally {
+    await session.endSession();
+  }
+
+  res.send(result);
+};
