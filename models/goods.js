@@ -21,6 +21,13 @@ var GoodsSchema = new Schema(
   }
 );
 
+GoodsSchema.pre("save", function (next) {
+  if (this.remains <= 0) {
+    this.available = false;
+  }
+  next();
+});
+
 GoodsSchema.index({ name: "text" }, { default_language: "none" });
 
 module.exports = mongoose.model("Goods", GoodsSchema);

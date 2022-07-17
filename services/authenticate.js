@@ -15,10 +15,9 @@ const auth = async (req, res, next) => {
 
     req.query.account_id = data._id;
     req.query.user_type = data.user_type;
-    // req.params.token = token;
     next();
   } catch (error) {
-    res.status(401).send("Not authorized to access this resource");
+    res.status(401).send({ error: "Not authorized to access this resource" });
   }
 };
 module.exports = auth;

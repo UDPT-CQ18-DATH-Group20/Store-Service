@@ -172,8 +172,6 @@ exports.getStoreInfo = async function (req, res, next) {
     return res.status(401).send("User don't have the authorization!");
   }
 
-  console.log(accountId);
-
   Store.findOne({ account_id: accountId })
     .populate("storeinfo_id")
     .exec(function (err, store) {
@@ -185,6 +183,22 @@ exports.getStoreInfo = async function (req, res, next) {
 
       res.json(store);
     });
+};
+
+exports.getAllGoodsOfStore = async function (req, res, next) {
+  let accountId = req.query.account_id;
+  let userType = req.query.user_type;
+  if (userType != STORE_TYPE) {
+    return res.status(401).send("User don't have the authorization!");
+  }
+  try {
+    let store = await Store.findOne({ account_id: accountId });
+    let goods = await Goods.find({ store_id: store._id });
+
+    res.json(goods);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
 };
 
 async function upLoadGoodsPic(fileObj) {

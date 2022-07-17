@@ -156,7 +156,7 @@ exports.orderTransaction = async function (req, res, next) {
     await session.commitTransaction();
   } catch (e) {
     await session.abortTransaction();
-    return res.send(e.message);
+    return res.status(400).send(e.message);
   } finally {
     await session.endSession();
   }

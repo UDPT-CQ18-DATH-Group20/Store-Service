@@ -22,5 +22,6 @@ router.post(
 );
 
 router.get("/", storeController.getStoreInfo);
+router.get("/goods", storeController.getAllGoodsOfStore);
 
 module.exports = router;
