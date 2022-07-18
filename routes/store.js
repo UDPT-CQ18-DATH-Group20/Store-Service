@@ -23,5 +23,16 @@ router.post(
 
 router.get("/", storeController.getStoreInfo);
 router.get("/goods", storeController.getAllGoodsOfStore);
+router.patch(
+  "/goods/:goods_id/update-quantity",
+  storeController.updateGoodsQuantity
+);
+
+router.patch(
+  "/goods/:goods_id/update-quantity",
+  storeController.updateGoodsQuantity
+);
+
+router.delete("/goods/:goods_id", storeController.deleteGoods);
 
 module.exports = router;

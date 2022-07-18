@@ -201,6 +201,69 @@ exports.getAllGoodsOfStore = async function (req, res, next) {
   }
 };
 
+exports.updateGoodsQuantity = function (req, res, next) {
+  let accountId = req.query.account_id;
+  let userType = req.query.user_type;
+  let goodId = req.params.goods_id;
+  if (userType != STORE_TYPE) {
+    return res.status(401).send("User don't have the authorization!");
+  }
+
+  Store.findOne({ account_id: accountId })
+    .select("_id")
+    .exec(function (err, store) {
+      if (err) return next(err);
+
+      if (!store) {
+        return res.status(400).send("User don't have the authorization!");
+      }
+
+      Goods.findOne(
+        { store_id: store._id, _id: goodId },
+        function (err, goods) {
+          if (err) return next(err);
+
+          if (!goods) {
+            return res.status(404).send("Good doesn't exists!");
+          }
+
+          goods.remains = req.body.quantity;
+
+          goods
+            .save()
+            .then(() => res.status(201).send("Good has been updated"))
+            .catch(next);
+        }
+      );
+    });
+};
+
+exports.deleteGoods = function (req, res, next) {
+  let accountId = req.query.account_id;
+  let userType = req.query.user_type;
+  let goodId = req.params.goods_id;
+  if (userType != STORE_TYPE) {
+    return res.status(401).send("User don't have the authorization!");
+  }
+
+  Store.findOne({ account_id: accountId })
+    .select("_id")
+    .exec(function (err, store) {
+      if (err) return next(err);
+
+      if (!store) {
+        return res.status(400).send("User don't have the authorization!");
+      }
+
+      Goods.findByIdAndDelete(goodId).exec(function (err, result) {
+        if (err) next(err);
+
+        console.log(result);
+
+        res.send("Good had been deleted");
+      });
+    });
+};
 async function upLoadGoodsPic(fileObj) {
   const fileName = fileObj.originalname;
   const mimeType = fileObj.mimetype;
